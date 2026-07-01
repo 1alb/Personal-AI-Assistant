@@ -1,0 +1,341 @@
+{
+  "name": "Personal AI Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are an AI executive assistant.\n\nToday's date and time:\n{{$json[\"Readable date\"]}}\n{{$json[\"Readable time\"]}}\n\nYour tasks are:\n\n1. Read today's YouTube analytics that will be provided by previous nodes.\n2. Summarize the important metrics.\n3. Read today's Google Calendar events.\n4. Create a professional daily report.\n\nThe report must contain:\n\n# Daily Report\n\nDate:\nTime:\n\n## YouTube Analytics\n- Views\n- Watch Time\n- Subscribers\n- Top Videos\n\n## Calendar Events\n- List all events for today.\n- Mention the event time.\n\n## Summary\nWrite a short summary of today's performance and schedule.\n\nReturn only the report.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        256,
+        -128
+      ],
+      "id": "4c29e326-5f2b-48b7-a0e4-e4d983873589",
+      "name": "AI Agent",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "maxTries": 5,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 5
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        -128
+      ],
+      "id": "b8b35a29-a6aa-4afc-ae76-19f5adc4bc38",
+      "name": "Schedule Trigger",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "format": "imperial",
+        "cityName": "Jaipur,Rajasthan"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [
+        80,
+        224
+      ],
+      "id": "db43bc2d-9625-41be-a1a1-c16aa4d0e287",
+      "name": "Get Weather",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "NBqEk2FXR8VCrCgH",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1-J9unbEdl2fk2zyQf12n61k_FNAIFIabh92bkL3ilPI",
+          "mode": "list",
+          "cachedResultName": "MUJ Interest Capture",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-J9unbEdl2fk2zyQf12n61k_FNAIFIabh92bkL3ilPI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1-J9unbEdl2fk2zyQf12n61k_FNAIFIabh92bkL3ilPI/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        224,
+        240
+      ],
+      "id": "23e71f9d-5658-4f19-a249-22619c630f7a",
+      "name": "Get TrailList",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "gefS8fyMRrczcID4",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "monishagaur02042004@gmail.com",
+        "subject": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Subject', ``, 'string') }}",
+        "message": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Message', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [
+        400,
+        240
+      ],
+      "id": "0942b3f8-42df-4a37-b187-b17b97a33e83",
+      "name": "Send a message",
+      "webhookId": "f5191133-6d6f-4e74-a93c-598ee6160ac5",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "JUAmRroOST3ZO7Ta",
+          "name": "Gmail OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "monishagaur02042004@gmail.com",
+          "mode": "list",
+          "cachedResultName": "monishagaur02042004@gmail.com"
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        592,
+        256
+      ],
+      "id": "2c79b278-b1f4-47ce-a536-198aee50fd16",
+      "name": "Check Calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "XjGshtlGQDgbuYtT",
+          "name": "Google Calendar OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "trail-run-session"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -96,
+        224
+      ],
+      "id": "86d431aa-f5ae-4c62-be4e-2c2ea8332cb6",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Makes an HTTP request to Air Now and returns the Air Quality Data",
+        "url": "https://www.airnowapi.org/aq/observation/zipCode/current/?format=application/json&zipCode=84020&distance=25&API_KEY=D162DAB0-BBF5-4C8D-B3AF-F1FE89654DE4",
+        "options": {},
+        "optimizeResponse": true
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        736,
+        256
+      ],
+      "id": "32c2809d-6446-4619-82fb-481deb92ecfd",
+      "name": "Get AirQuality"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -272,
+        -256
+      ],
+      "id": "1f442f54-386e-406e-ba59-b88358e7e534",
+      "name": "When chat message received",
+      "webhookId": "056f87c5-6cad-4a42-b4c5-876d12ddce72"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "maxTokens": 2000,
+          "topP": 0.9
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        224
+      ],
+      "id": "71a294cc-f8e3-4860-a79b-76b14dd05789",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "6TUal1J2ug5Vd1GD",
+          "name": "OpenAI account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weather": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get TrailList": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get AirQuality": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "35eb44a4-3204-4de9-aceb-6f71ed260c86",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "f42be1e9bbb144780f2d7a641ca9bec33e26feef127405a5231d8702bc9233f5"
+  },
+  "nodeGroups": [],
+  "id": "tng1Id0IGYj9iJ8a",
+  "tags": []
+}
